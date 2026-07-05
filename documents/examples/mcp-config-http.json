@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+        "employees-http": {
+            "comment": "HTTP/SSE モードでの設定例",
+            "url": "http://localhost:38117/sse",
+            "transport": "sse"
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "version": "1.0.0",
+    "configurations": [
+        {
+            "name": "Python: MCP Server (stdio)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "--transport",
+                "stdio"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "DEBUG": "True"
+            },
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Python: MCP Server (HTTP/SSE)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "--transport",
+                "sse"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "DEBUG": "True"
+            },
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

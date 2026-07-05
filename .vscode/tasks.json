@@ -1,0 +1,124 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Create Virtual Environment",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "venv",
+                ".venv"
+            ],
+            "problemMatcher": [],
+            "detail": "Python仮想環境を作成"
+        },
+        {
+            "label": "Install Dependencies",
+            "type": "shell",
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe"
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python"
+            },
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                "requirements.txt"
+            ],
+            "problemMatcher": [],
+            "detail": "requirements.txtから依存関係をインストール"
+        },
+        {
+            "label": "Run MCP Server",
+            "type": "shell",
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe"
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python"
+            },
+            "args": [
+                "main.py"
+            ],
+            "problemMatcher": [],
+            "detail": "MCPサーバーを起動"
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe"
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python"
+            },
+            "args": [
+                "-m",
+                "pytest",
+                "tests/",
+                "-v"
+            ],
+            "problemMatcher": [],
+            "detail": "pytestでテストを実行"
+        },
+        {
+            "label": "Format Code",
+            "type": "shell",
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe"
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python"
+            },
+            "args": [
+                "-m",
+                "black",
+                "src/",
+                "main.py"
+            ],
+            "problemMatcher": [],
+            "detail": "Blackでコードをフォーマット"
+        },
+        {
+            "label": "Docker Build",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "build",
+                "-t",
+                "employees-mcp-server",
+                "."
+            ],
+            "problemMatcher": [],
+            "detail": "Dockerイメージをビルド"
+        },
+        {
+            "label": "Docker Run",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "run",
+                "-p",
+                "38117:38117",
+                "employees-mcp-server"
+            ],
+            "problemMatcher": [],
+            "detail": "Dockerコンテナを実行"
+        },
+        {
+            "label": "Docker Compose Up",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "up",
+                "-d"
+            ],
+            "problemMatcher": [],
+            "detail": "Docker Composeでサービスを起動"
+        }
+    ]
+}

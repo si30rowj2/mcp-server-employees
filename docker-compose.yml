@@ -1,0 +1,27 @@
+# version: '3.8'
+
+services:
+  mcp-server:
+    build: .
+    container_name: mcp-server-employees
+    ports:
+      # ホスト公開ポート:コンテナ内部ポート（内部は 38117 固定）
+      - "48117:38117"
+    environment:
+      - HTTP_HOST=0.0.0.0
+      - HTTP_PORT=38117
+      - LOG_LEVEL=INFO
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      - ./data/employees.db:/app/data/employees.db:ro
+    restart: unless-stopped
+    command: [ "python", "main.py", "--transport", "sse" ]
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:38117/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+

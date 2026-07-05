@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "employees": {
+            "comment": "stdio モード（標準入出力）での設定例",
+            "command": "C:\\data\\dev\\mcp-server-post-code\\.venv\\Scripts\\python.exe",
+            "args": [
+                "C:\\data\\dev\\mcp-server-post-code\\main.py",
+                "--transport",
+                "stdio"
+            ]
+        }
+    }
+}

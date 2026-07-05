@@ -1,0 +1,12 @@
+[flake8]
+# black に合わせる（E203/W503 は black と競合するため除外）
+max-line-length = 88
+extend-ignore = E203, W503
+exclude =
+    .git,
+    .venv,
+    __pycache__,
+    logs,
+    data,
+    .pytest_cache,
+    .mypy_cache
