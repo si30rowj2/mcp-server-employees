@@ -101,15 +101,14 @@ SSE エンドポイント: `http://localhost:38117/sse`
 
 ### Claude Desktop（stdio モード）
 
-`%APPDATA%\Claude\claude_desktop_config.json` に以下を追加:
-
+1. Claude Desktopを完全終了後、`%APPDATA%\Claude\claude_desktop_config.json` に以下を追加(パスは自PCの該当MCPサーバのプロジェクトのパスに読み替えること):
 ```json
 {
   "mcpServers": {
     "employees": {
-      "command": "C:\\data\\dev\\mcp-server-post-code\\.venv\\Scripts\\python.exe",
+      "command": "C:\\data\\dev\\mcp-server-employees\\.venv\\Scripts\\python.exe",
       "args": [
-        "C:\\data\\dev\\mcp-server-post-code\\main.py",
+        "C:\\data\\dev\\mcp-server-employees\\main.py",
         "--transport",
         "stdio"
       ]
@@ -117,6 +116,10 @@ SSE エンドポイント: `http://localhost:38117/sse`
   }
 }
 ```
+
+2. Claude Desktopを再起動後、ファイル→設定→開発者 を選択する。「ローカルMCPサーバー」として"employees"が表示されていれば設定成功
+
+3. Claude Desktopのチャットで従業員に関するプロンプトを投げてみる。質問内容に沿ってemployees.dbのデータが検索出来れば成功(後述する"使用例"を参照)
 
 ### VS Code（HTTP/SSE モード）
 
@@ -126,7 +129,7 @@ SSE エンドポイント: `http://localhost:38117/sse`
 .venv\Scripts\python.exe main.py --transport sse
 ```
 
-2. `.vscode/mcp.json` に以下を追加（VS Code は `url` 指定の SSE 接続に対応）:
+2. `.vscode/mcp.json` というファイルを作成し、以下を追記（VS Code は `url` 指定の SSE 接続に対応）:
 
 ```json
 {
@@ -142,42 +145,7 @@ SSE エンドポイント: `http://localhost:38117/sse`
 > Docker Compose 経由で起動している場合、ホスト公開ポートは `48117` なので
 > URL は `http://localhost:48117/sse` になります（`docker-compose.yml` の `ports` 設定）。
 
-### Claude Desktop（HTTP/SSE モード）
-
-Claude Desktop の設定ファイル（`claude_desktop_config.json`）は **stdio 起動のみ**対応で、
-`url` / `transport` を直接指定して SSE サーバーへ接続することはできません。
-HTTP/SSE サーバーへ繋ぐには、次のいずれかを使います。
-
-**方法1: `mcp-remote` ブリッジ経由（設定ファイルで完結・推奨）**
-
-`mcp-remote` が HTTP/SSE サーバーを stdio に橋渡しします（実行に Node.js / npx が必要）。
-先に SSE サーバーを起動しておき、`%APPDATA%\Claude\claude_desktop_config.json` に追加:
-
-```json
-{
-  "mcpServers": {
-    "employees-http": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "http://localhost:38117/sse"]
-    }
-  }
-}
-```
-
-> Docker Compose 経由の場合は URL を `http://localhost:48117/sse` にします。
-
-**方法2: Connectors（カスタムコネクタ）から URL 登録**
-
-Claude Desktop の「設定 → コネクタ → カスタムコネクタを追加」から、SSE サーバーの
-URL（`http://localhost:38117/sse`）を直接登録できます（有料プラン向けの機能）。
-
-> ローカル利用で最も手軽なのは、そもそも HTTP/SSE を使わず
-> 前述の「Claude Desktop（stdio モード）」で登録する方法です。
-
-**設定ファイルの場所:**
-
-- **Claude Desktop**: `%APPDATA%\Claude\claude_desktop_config.json`
-- **VS Code**: プロジェクトの `.vscode/mcp.json`
+3. VSCodeのgithub copilotのチャットで従業員に関するプロンプトを投げてみる。質問内容に沿ってemployees.dbのデータが検索出来れば成功(後述する"使用例"を参照)
 
 ## 環境変数（オプション）
 
