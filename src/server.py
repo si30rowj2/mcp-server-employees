@@ -7,9 +7,27 @@ import json
 from typing import Literal
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 from src import employees_db
 from src.config import settings
+
+
+# DNS リバインディング保護（Invalid Host header / 421 の原因）の設定。
+# FastMCP は host が指定されていないと既定でこの保護を有効化し、許可ホストを
+# localhost 系に限定するため、LAN 内の別ホストから SSE で接続すると 421 になる。
+# settings.allowed_hosts が指定されていれば許可ホストを限定し、空なら保護を無効化する。
+if settings.allowed_hosts_list:
+    _transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=settings.allowed_hosts_list,
+        allowed_origins=settings.allowed_origins_list,
+    )
+else:
+    _transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=False,
+    )
+
 
 mcp = FastMCP(
     "employees-server",
@@ -18,9 +36,8 @@ mcp = FastMCP(
         "records (name, department, job title, office, reporting line) backed "
         "by a local SQLite database (data/employees.db)."
     ),
+    transport_security=_transport_security,
 )
-
-app = mcp.sse_app()
 
 
 def _dump(data) -> str:
@@ -141,13 +158,25 @@ def run_server(transport: Literal["stdio", "sse"] = "stdio") -> None:
     """Start the MCP server with the requested transport."""
     if transport == "sse":
         import uvicorn
+        from fastapi.middleware.cors import CORSMiddleware
+
+        # 実際に起動する app にミドルウェアを付与する（別インスタンスに付けても効かない）。
+        app = mcp.sse_app()
+
+        # 他ホスト（ブラウザ含む）からのアクセスを許可する CORS 設定。
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
 
         base_url = f"http://{settings.http_host}:{settings.http_port}"
         print(f"Starting MCP server with SSE transport on {base_url}")
         print(f"SSE endpoint: {base_url}/sse")
 
         uvicorn.run(
-            mcp.sse_app(),
+            app,
             host=settings.http_host,
             port=settings.http_port,
             log_level="info",

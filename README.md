@@ -57,6 +57,42 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+### 初回起動までの最短手順
+
+Windows PowerShell で、リポジトリ直下から以下の順に実行します。
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+
+# data/employees.db が無い場合のみ作成
+python scripts\build_employees_db.py --db data\employees.db
+
+# ローカル MCP クライアントから使う場合
+python main.py --transport stdio
+
+# HTTP/SSE で起動する場合
+python main.py --transport sse
+```
+
+HTTP/SSE モードで起動した場合、MCP クライアントには
+`http://localhost:38117/sse` を登録します。`.env` を作成しない場合も既定値で起動できます。
+
+### 環境変数ファイル（`.env`）の作成
+
+設定をカスタマイズする場合は、同梱の `.env.example` をコピーして `.env` を作成し、
+必要な項目を編集します（`.env` は Git 管理対象外です）。既定値のままで動く場合は
+作成を省略しても構いません。
+
+```bash
+copy .env.example .env        # Windows (PowerShell では Copy-Item .env.example .env)
+# cp .env.example .env        # Linux/Mac
+```
+
+設定できる項目（`DB_PATH` / `HTTP_HOST` / `HTTP_PORT` / `LOG_LEVEL` / `ALLOWED_HOSTS` など）の
+詳細は [USAGE.md](USAGE.md) を参照してください。
+
 ## 実行方法
 
 ### 2 つのモードの違い（MCP をはじめて使う方へ）
@@ -135,11 +171,13 @@ pytest tests/ -v
 
 ```bash
 docker build -t employees-mcp-server .
-docker run -p 48117:38117 employees-mcp-server
+docker run -p 48117:38117 employees-mcp-server python main.py --transport sse
 ```
 
-※ Docker の `CMD` は既定で SSE 起動しません。SSE で使う場合は
-`CMD ["python", "main.py", "--transport", "sse"]` に変更してください。
+SSE エンドポイントは `http://localhost:48117/sse` です。
+
+※ Dockerfile の `CMD` は既定で stdio 起動です。HTTP/SSE で使う場合は、上記のように
+`python main.py --transport sse` を指定して起動してください。
 
 ### docker compose
 
